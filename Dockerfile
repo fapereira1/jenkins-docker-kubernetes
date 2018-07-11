@@ -1,7 +1,16 @@
 FROM jenkins/jenkins:2.112
-USER root
-RUN apt-get update && apt-get install -y make git openjdk-8-jdk
+
+LABEL Author="Fabio Augusto Pereira" 
+
+ARG master_image_version="v.1.0.0"
+ENV master_image_version $master_image_version
+
 USER jenkins
+
+# Plugin Setup
 COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
 RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
-ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
+
+# Auto Configuration Scripts
+COPY groovy/* /usr/share/jenkins/ref/init.groovy.d/
+COPY config/*.properties ${JENKINS_HOME}/config/
